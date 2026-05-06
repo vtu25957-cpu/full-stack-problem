@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>STUDENT REGISTRATION FORM</h1>
+            <div class="subtitle">ACADEMIC YEAR 2026</div>
+        </div>
+
+        <div class="form-container">
+            <form id="registrationForm" action="RegisterServlet" method="post">
+                <div class="form-grid">
+                    <!-- Full Name -->
+                    <div class="form-group full-width">
+                        <label>
+                            <i class="fas fa-user"></i>
+                            FULL NAME <span class="required">*</span>
+                        </label>
+                        <input type="text" name="name" placeholder="Enter your full name" required>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-envelope"></i>
+                            EMAIL <span class="required">*</span>
+                        </label>
+                        <input type="email" name="email" placeholder="student@example.com" required>
+                    </div>
+
+                    <!-- Date of Birth - FIXED CALENDAR -->
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-calendar"></i>
+                            DATE OF BIRTH <span class="required">*</span>
+                        </label>
+                        <input type="date" 
+                               name="dob" 
+                               id="dob"
+                               required
+                               max="2026-12-31"
+                               min="1900-01-01"
+                               value="2000-01-01"
+                               onclick="this.showPicker()"
+                               class="date-input">
+                        <span class="hint">Click calendar icon to select date</span>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-phone"></i>
+                            PHONE <span class="required">*</span>
+                        </label>
+                        <input type="tel" name="phone" id="phone" placeholder="123-456-7890" required>
+                        <span class="hint">Format: 123-456-7890</span>
+                    </div>
+
+                   <!-- Department Field in register.html -->
+<div class="form-group full-width">
+    <label>
+        <i class="fas fa-building"></i>
+        DEPARTMENT <span class="required">*</span>
+    </label>
+    <select name="department" required style="color: var(--text-light); background: var(--primary-dark);">
+        <option value="" disabled selected style="color: var(--text-dim);">Select Department</option>
+        <option value="Computer Science" style="color: var(--text-light); background: var(--primary-dark);">Computer Science</option>
+        <option value="Engineering" style="color: var(--text-light); background: var(--primary-dark);">Engineering</option>
+        <option value="Mathematics" style="color: var(--text-light); background: var(--primary-dark);">Mathematics</option>
+        <option value="Physics" style="color: var(--text-light); background: var(--primary-dark);">Physics</option>
+        <option value="Chemistry" style="color: var(--text-light); background: var(--primary-dark);">Chemistry</option>
+        <option value="Business" style="color: var(--text-light); background: var(--primary-dark);">Business Administration</option>
+    </select>
+</div>
+                <!-- Terms -->
+                <div class="checkbox-group">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms">
+                        I agree to the <a href="#">Terms and Conditions</a>
+                    </label>
+                </div>
+
+                <!-- Buttons -->
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check-circle"></i>
+                        REGISTER
+                    </button>
+                    <a href="ViewStudentsServlet" class="btn btn-secondary">
+                        <i class="fas fa-users"></i>
+                        VIEW ALL
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Force calendar to open on click
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.getElementById('dob');
+            if (dateInput) {
+                // Ensure date input works
+                dateInput.addEventListener('click', function(e) {
+                    if (typeof this.showPicker === 'function') {
+                        this.showPicker();
+                    }
+                });
+                
+                // Set default date if empty
+                if (!dateInput.value) {
+                    const today = new Date();
+                    const year = today.getFullYear() - 18; // Make user at least 18
+                    const month = String(today.getMonth() + 1).padStart(2, '0');
+                    const day = String(today.getDate()).padStart(2, '0');
+                    dateInput.value = `${year}-${month}-${day}`;
+                }
+            }
+        });
+
+        // Phone formatting
+        document.getElementById('phone')?.addEventListener('input', function(e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+            e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2] + (x[3] ? '-' + x[3] : '');
+        });
+
+        // Form validation
+        document.getElementById('registrationForm')?.addEventListener('submit', function(e) {
+            const name = document.querySelector('input[name="name"]').value;
+            const email = document.querySelector('input[name="email"]').value;
+            const phone = document.getElementById('phone').value;
+            const terms = document.getElementById('terms').checked;
+
+            if (name.trim().length < 3) {
+                alert('Name must be at least 3 characters');
+                e.preventDefault();
+                return;
+            }
+
+            if (!email.includes('@') || !email.includes('.')) {
+                alert('Enter valid email');
+                e.preventDefault();
+                return;
+            }
+
+            if (!phone.match(/^\d{3}-\d{3}-\d{4}$/)) {
+                alert('Phone must be 123-456-7890');
+                e.preventDefault();
+                return;
+            }
+
+            if (!terms) {
+                alert('Accept terms');
+                e.preventDefault();
+                return;
+            }
+        });
+    </script>
+    
+    <script>
+    // Force dropdown options to be visible in dark mode
+    document.addEventListener('DOMContentLoaded', function() {
+        const selects = document.querySelectorAll('select');
+        selects.forEach(select => {
+            // Style the select itself
+            select.style.backgroundColor = '#0A0A0A';
+            select.style.color = '#E0E0E0';
+            
+            // Style all options
+            Array.from(select.options).forEach(option => {
+                option.style.backgroundColor = '#0A0A0A';
+                option.style.color = '#E0E0E0';
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

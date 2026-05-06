@@ -1,0 +1,22 @@
+{
+  "admin": {
+    "password": "admin123",
+    "name": "Administrator",
+    "role": "admin"
+  },
+  "john_doe": {
+    "password": "john2024",
+    "name": "John Doe",
+    "role": "user"
+  },
+  "jane_smith": {
+    "password": "jane456",
+    "name": "Jane Smith",
+    "role": "user"
+  },
+  "testuser": {
+    "password": "test123",
+    "name": "Test User",
+    "role": "guest"
+  }
+}

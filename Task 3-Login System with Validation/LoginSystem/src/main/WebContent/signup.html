@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Create Account</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Add this style for signup page -->
+    <style>
+        /* Additional styles for signup page */
+        .name-fields {
+            display: flex;
+            gap: 10px;
+        }
+        .name-fields .input-group {
+            flex: 1;
+        }
+        .terms-checkbox {
+            margin: 15px 0;
+            color: rgba(255,255,255,0.9);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .terms-checkbox a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .terms-checkbox a:hover {
+            text-decoration: underline;
+        }
+        .password-strength {
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s;
+        }
+        .strength-text {
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 5px;
+            text-align: right;
+        }
+        .success-message {
+            background: rgba(46, 213, 115, 0.2);
+            border: 1px solid rgba(46, 213, 115, 0.3);
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            color: #2ed573;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255,255,255,0.9);
+        }
+        .login-link a {
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Animated background elements -->
+        <div class="bg-gradient"></div>
+        <div class="bg-blob blob1"></div>
+        <div class="bg-blob blob2"></div>
+        <div class="bg-blob blob3"></div>
+        
+        <!-- Sign Up Card -->
+        <div class="login-card" style="max-width: 500px;">
+            <!-- Header Section -->
+            <div class="card-header">
+                <div class="logo">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h2>Create Account</h2>
+                <p>Join us today! Fill in your details</p>
+            </div>
+
+            <!-- Success Message -->
+            <div id="successMessage" class="success-message">
+                <i class="fas fa-check-circle"></i>
+                <span></span>
+            </div>
+
+            <!-- Sign Up Form -->
+            <form id="signupForm" class="login-form">
+                <!-- Name Fields -->
+                <div class="name-fields">
+                    <div class="input-group">
+                        <div class="input-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <input 
+                            type="text" 
+                            id="firstName" 
+                            placeholder="First Name"
+                            autocomplete="off"
+                        >
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <input 
+                            type="text" 
+                            id="lastName" 
+                            placeholder="Last Name"
+                            autocomplete="off"
+                        >
+                    </div>
+                </div>
+
+                <!-- Username -->
+                <div class="input-group">
+                    <div class="input-icon">
+                        <i class="fas fa-at"></i>
+                    </div>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        placeholder="Username"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <!-- Email -->
+                <div class="input-group">
+                    <div class="input-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        placeholder="Email Address"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <!-- Password -->
+                <div class="input-group">
+                    <div class="input-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        placeholder="Password"
+                    >
+                    <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+
+                <!-- Password Strength Indicator -->
+                <div class="password-strength">
+                    <div class="password-strength-bar" id="strengthBar"></div>
+                </div>
+                <div class="strength-text" id="strengthText">Enter password</div>
+
+                <!-- Confirm Password -->
+                <div class="input-group">
+                    <div class="input-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <input 
+                        type="password" 
+                        id="confirmPassword" 
+                        placeholder="Confirm Password"
+                    >
+                    <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+
+                <!-- Error Message -->
+                <div id="errorMessage" class="error-message">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span></span>
+                </div>
+
+                <!-- Terms and Conditions -->
+                <label class="terms-checkbox">
+                    <input type="checkbox" id="terms" required>
+                    <span class="checkmark"></span>
+                    I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                </label>
+
+                <!-- Submit Button -->
+                <button type="submit" class="login-btn" id="signupBtn">
+                    <span>Create Account</span>
+                    <i class="fas fa-user-plus"></i>
+                </button>
+            </form>
+
+            <!-- Login Link -->
+            <div class="login-link">
+                <p>Already have an account? <a href="index.html">Sign In</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom JavaScript -->
+    <script src="js/signup.js"></script>
+</body>
+</html>

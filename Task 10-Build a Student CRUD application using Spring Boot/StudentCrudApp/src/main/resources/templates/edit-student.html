@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Student</title>
+    <link rel="stylesheet" href="/css/dark-theme.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✏️ Edit Student</h1>
+        </header>
+        
+        <div class="form-container">
+            <form th:action="@{/students/update/{id}(id=${student.id})}" method="post" class="student-form">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name *</label>
+                        <input type="text" id="firstName" name="firstName" 
+                               th:value="${student.firstName}" required 
+                               placeholder="Enter first name" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lastName">Last Name *</label>
+                        <input type="text" id="lastName" name="lastName" 
+                               th:value="${student.lastName}" required 
+                               placeholder="Enter last name" class="form-control">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" 
+                               th:value="${student.email}" required 
+                               placeholder="student@example.com" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phoneNumber">Phone Number</label>
+                        <input type="tel" id="phoneNumber" name="phoneNumber" 
+                               th:value="${student.phoneNumber}" 
+                               placeholder="+1234567890" class="form-control">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dateOfBirth">Date of Birth</label>
+                        <input type="date" id="dateOfBirth" name="dateOfBirth" 
+                               th:value="${student.dateOfBirth}" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <select id="department" name="department" class="form-control">
+                            <option value="">Select Department</option>
+                            <option value="Computer Science" 
+                                th:selected="${student.department == 'Computer Science'}">Computer Science</option>
+                            <option value="Engineering" 
+                                th:selected="${student.department == 'Engineering'}">Engineering</option>
+                            <option value="Business" 
+                                th:selected="${student.department == 'Business'}">Business</option>
+                            <option value="Mathematics" 
+                                th:selected="${student.department == 'Mathematics'}">Mathematics</option>
+                            <option value="Physics" 
+                                th:selected="${student.department == 'Physics'}">Physics</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="semester">Semester</label>
+                        <select id="semester" name="semester" class="form-control">
+                            <option value="">Select Semester</option>
+                            <option value="1st" th:selected="${student.semester == '1st'}">1st Semester</option>
+                            <option value="2nd" th:selected="${student.semester == '2nd'}">2nd Semester</option>
+                            <option value="3rd" th:selected="${student.semester == '3rd'}">3rd Semester</option>
+                            <option value="4th" th:selected="${student.semester == '4th'}">4th Semester</option>
+                            <option value="5th" th:selected="${student.semester == '5th'}">5th Semester</option>
+                            <option value="6th" th:selected="${student.semester == '6th'}">6th Semester</option>
+                            <option value="7th" th:selected="${student.semester == '7th'}">7th Semester</option>
+                            <option value="8th" th:selected="${student.semester == '8th'}">8th Semester</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cgpa">CGPA</label>
+                        <input type="number" id="cgpa" name="cgpa" step="0.01" min="0" max="4" 
+                               th:value="${student.cgpa}" class="form-control">
+                    </div>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label for="address">Address</label>
+                    <textarea id="address" name="address" rows="3" 
+                              class="form-control" th:text="${student.address}"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Update Student</button>
+                    <a href="/students/" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="/js/script.js"></script>
+</body>
+</html>

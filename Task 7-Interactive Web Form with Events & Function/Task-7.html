@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Interactive Feedback Form</title>
+
+  <style>
+    /* --------- Theme variables (easy to recolor) --------- */
+    :root{
+      --bg: #0b1220;
+      --card: rgba(255,255,255,0.08);
+      --card-border: rgba(255,255,255,0.14);
+      --text: #e8eefc;
+      --muted: rgba(232,238,252,0.75);
+
+      --primary: #6d5efc;
+      --primary2:#19c2ff;
+      --ok: #22c55e;
+      --bad: #ff4d6d;
+      --warn:#fbbf24;
+
+      --field: rgba(255,255,255,0.10);
+      --field-hover: rgba(255,255,255,0.14);
+      --field-focus: rgba(109,94,252,0.30);
+
+      --shadow: 0 22px 60px rgba(0,0,0,0.45);
+    }
+
+    /* Light mode (toggle by adding data-theme="light" to <html>) */
+    html[data-theme="light"]{
+      --bg: #f6f8ff;
+      --card: #ffffff;
+      --card-border: rgba(18,23,38,0.10);
+      --text: #121726;
+      --muted: rgba(18,23,38,0.72);
+
+      --field: rgba(18,23,38,0.06);
+      --field-hover: rgba(18,23,38,0.08);
+      --field-focus: rgba(109,94,252,0.18);
+      --shadow: 0 18px 44px rgba(20,20,50,0.12);
+    }
+
+    /* --------- Layout + colorful background --------- */
+    body{
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(900px 500px at 10% 10%, rgba(25,194,255,0.20), transparent 60%),
+        radial-gradient(900px 500px at 90% 30%, rgba(109,94,252,0.22), transparent 60%),
+        radial-gradient(700px 450px at 40% 95%, rgba(34,197,94,0.16), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .wrap{ width: min(760px, 100%); }
+    header{
+      display:flex; justify-content:space-between; align-items:flex-start;
+      gap: 12px; margin-bottom: 14px;
+    }
+    h1{ font-size: 24px; margin: 0; letter-spacing: 0.2px; }
+    .sub{ margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+
+    .top-actions{ display:flex; gap: 10px; align-items:center; }
+    .chip{
+      border: 1px solid var(--card-border);
+      background: var(--card);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform .12s ease, background .2s ease;
+      user-select:none;
+    }
+    .chip:active{ transform: scale(0.98); }
+
+    /* --------- Card --------- */
+    form{
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .full{ grid-column: 1 / -1; }
+
+    label{ display:block; margin: 10px 0 6px; font-weight: 600; font-size: 13px; }
+    .hint{ color: var(--muted); font-size: 12px; margin-top: 6px; }
+    .error{ color: var(--bad); font-size: 12px; margin-top: 6px; min-height: 16px; }
+
+    /* Inputs */
+    input, textarea, select{
+      width: 100%;
+      box-sizing: border-box;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: var(--field);
+      color: var(--text);
+      outline: none;
+      transition: background .2s ease, box-shadow .2s ease, border-color .2s ease, transform .12s ease;
+    }
+    textarea{ min-height: 120px; resize: vertical; }
+
+    /* Hover highlight (mouse hover requirement) */
+    .hovered{ background: var(--field-hover); transform: translateY(-1px); }
+
+    /* Keyboard focus: use visible outline (better usability) */
+    input:focus-visible, textarea:focus-visible, select:focus-visible{
+      box-shadow: 0 0 0 5px var(--field-focus);
+      border-color: rgba(109,94,252,0.55);
+    }
+
+    /* Validation states */
+    .ok{ border-color: rgba(34,197,94,0.9) !important; }
+    .bad{ border-color: rgba(255,77,109,0.9) !important; }
+
+    /* Progress bar */
+    .progress{
+      height: 10px; border-radius: 999px;
+      background: rgba(255,255,255,0.10);
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+    }
+    .bar{
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--primary2));
+      transition: width .25s ease;
+    }
+    .meter-text{ font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+    /* Buttons */
+    .actions{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+      align-items:center;
+    }
+    button{
+      border: 0;
+      border-radius: 12px;
+      padding: 11px 14px;
+      cursor: pointer;
+      color: white;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      transition: transform .12s ease, filter .2s ease;
+    }
+    button:active{ transform: scale(0.98); }
+    .btn-primary{
+      background: linear-gradient(90deg, var(--primary), var(--primary2));
+    }
+    .btn-ghost{
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+    }
+    .btn-primary:hover{ filter: brightness(1.05); }
+
+    /* Toast */
+    .toast{
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      display:none;
+      border: 1px solid var(--card-border);
+    }
+    .toast.ok{
+      display:block;
+      border-color: rgba(34,197,94,0.7);
+      background: rgba(34,197,94,0.12);
+    }
+    .toast.bad{
+      display:block;
+      border-color: rgba(255,77,109,0.7);
+      background: rgba(255,77,109,0.10);
+    }
+
+    /* Small animation on invalid submit */
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-4px); }
+      100% { transform: translateX(0); }
+    }
+    .shake{ animation: shake 0.35s ease; }
+
+    /* Responsive */
+    @media (max-width: 640px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Customer Feedback</h1>
+        <p class="sub">Live validation + hover highlights + double‑click submit confirmation.</p>
+      </div>
+
+      <div class="top-actions">
+        <!-- Theme toggle adds more interactivity -->
+        <div id="themeBtn" class="chip" role="button" tabindex="0" title="Toggle theme">
+          Toggle theme
+        </div>
+      </div>
+    </header>
+
+    <form id="feedbackForm" novalidate>
+      <!-- Progress bar makes the form feel “alive” -->
+      <div class="progress" aria-label="Form completion">
+        <div id="bar" class="bar"></div>
+      </div>
+      <div id="meterText" class="meter-text">0% complete</div>
+
+      <div class="grid">
+        <div>
+          <label for="name">Name</label>
+          <input id="name" name="name" placeholder="Your name" autocomplete="name" />
+          <div class="hint">Min 2 characters.</div>
+          <div class="error" id="nameErr"></div>
+        </div>
+
+        <div>
+          <label for="email">Email</label>
+          <input id="email" name="email" placeholder="name@example.com" autocomplete="email" />
+          <div class="hint">We’ll only use this to follow up.</div>
+          <div class="error" id="emailErr"></div>
+        </div>
+
+        <div>
+          <label for="rating">Rating</label>
+          <select id="rating" name="rating">
+            <option value="">Select (1–5)</option>
+            <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+          </select>
+          <div class="error" id="ratingErr"></div>
+        </div>
+
+        <div>
+          <label for="topic">Topic</label>
+          <select id="topic" name="topic">
+            <option value="">Choose a topic</option>
+            <option>Service</option>
+            <option>Product quality</option>
+            <option>Delivery</option>
+            <option>Support</option>
+            <option>Other</option>
+          </select>
+          <div class="error" id="topicErr"></div>
+        </div>
+
+        <div class="full">
+          <label for="message">Feedback</label>
+          <textarea id="message" name="message" placeholder="What went well? What can we improve?"></textarea>
+          <div class="hint">
+            Min 10 characters. <span id="counter">0</span>/250
+          </div>
+          <div class="error" id="messageErr"></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <!-- Requirement: double-click submit -->
+        <button id="submitBtn" type="button" class="btn-primary" title="Double-click to submit">
+          Double‑click to submit
+        </button>
+
+        <!-- Extra interactive actions -->
+        <button id="previewBtn" type="button" class="btn-ghost">Preview</button>
+        <button id="clearBtn" type="button" class="btn-ghost">Clear</button>
+      </div>
+
+      <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    </form>
+  </div>
+
+<script>
+  // ---------------------------------------------------------
+  // TIP: For “real-time validation”, the `input` event is often
+  // better than `keypress` because it triggers on paste, delete,
+  // drag-drop, speech input, etc. [web:18][web:6]
+  // ---------------------------------------------------------
+
+  // Grab elements once (clean + fast)
+  const form = document.getElementById("feedbackForm");
+  const toast = document.getElementById("toast");
+  const bar = document.getElementById("bar");
+  const meterText = document.getElementById("meterText");
+
+  const name = document.getElementById("name");
+  const email = document.getElementById("email");
+  const rating = document.getElementById("rating");
+  const topic = document.getElementById("topic");
+  const message = document.getElementById("message");
+
+  const nameErr = document.getElementById("nameErr");
+  const emailErr = document.getElementById("emailErr");
+  const ratingErr = document.getElementById("ratingErr");
+  const topicErr = document.getElementById("topicErr");
+  const messageErr = document.getElementById("messageErr");
+
+  const counter = document.getElementById("counter");
+
+  // ---------- Reusable validation helpers ----------
+  const isRequired = (v) => v.trim().length > 0;
+  const minLen = (v, n) => v.trim().length >= n;
+  const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+
+  function setFieldState(inputEl, errEl, ok, msg = "") {
+    inputEl.classList.toggle("ok", ok);
+    inputEl.classList.toggle("bad", !ok);
+    errEl.textContent = ok ? "" : msg;
+  }
+
+  function validateName() {
+    const v = name.value;
+    const ok = isRequired(v) && minLen(v, 2);
+    setFieldState(name, nameErr, ok, "Enter at least 2 characters.");
+    return ok;
+  }
+
+  function validateEmail() {
+    const v = email.value;
+    const ok = isRequired(v) && isEmail(v);
+    setFieldState(email, emailErr, ok, "Enter a valid email (name@example.com).");
+    return ok;
+  }
+
+  function validateRating() {
+    const ok = isRequired(rating.value);
+    setFieldState(rating, ratingErr, ok, "Select a rating.");
+    return ok;
+  }
+
+  function validateTopic() {
+    const ok = isRequired(topic.value);
+    setFieldState(topic, topicErr, ok, "Select a topic.");
+    return ok;
+  }
+
+  function validateMessage() {
+    // Limit length for a nicer UX (and to show counter)
+    if (message.value.length > 250) message.value = message.value.slice(0, 250);
+
+    counter.textContent = message.value.length;
+
+    const ok = isRequired(message.value) && minLen(message.value, 10);
+    setFieldState(message, messageErr, ok, "Enter at least 10 characters.");
+    return ok;
+  }
+
+  function completionPercent() {
+    // Simple scoring: 4 required fields (name, email, rating, topic) + message
+    let done = 0;
+    if (validateName()) done++;
+    if (validateEmail()) done++;
+    if (validateRating()) done++;
+    if (validateTopic()) done++;
+    if (validateMessage()) done++;
+
+    return Math.round((done / 5) * 100);
+  }
+
+  function updateProgress() {
+    const pct = completionPercent();
+    bar.style.width = pct + "%";
+    meterText.textContent = pct + "% complete";
+  }
+
+  function validateAll() {
+    const ok = [
+      validateName(),
+      validateEmail(),
+      validateRating(),
+      validateTopic(),
+      validateMessage()
+    ].every(Boolean);
+
+    updateProgress();
+    return ok;
+  }
+
+  // ---------- Hover highlight (mouseover requirement) ----------
+  [name, email, rating, topic, message].forEach(el => {
+    el.addEventListener("mouseover", () => el.classList.add("hovered"));
+    el.addEventListener("mouseout",  () => el.classList.remove("hovered"));
+  });
+
+  // ---------- Real-time validation ----------
+  // Use `input` for typing/paste/delete; `change` for selects.
+  name.addEventListener("input", () => { validateName(); updateProgress(); });
+  email.addEventListener("input", () => { validateEmail(); updateProgress(); });
+  message.addEventListener("input", () => { validateMessage(); updateProgress(); });
+
+  rating.addEventListener("change", () => { validateRating(); updateProgress(); });
+  topic.addEventListener("change", () => { validateTopic(); updateProgress(); });
+
+  // ---------- Buttons ----------
+  document.getElementById("previewBtn").addEventListener("click", () => {
+    // Preview shows a toast message with a compact summary.
+    // (No copyrighted content here; user-generated text only.)
+    toast.className = "toast ok";
+    toast.textContent =
+      `Preview: ${name.value || "No name"} | ${email.value || "No email"} | ` +
+      `Rating: ${rating.value || "-"} | Topic: ${topic.value || "-"} | ` +
+      `Msg chars: ${message.value.length}`;
+  });
+
+  document.getElementById("clearBtn").addEventListener("click", () => {
+    form.reset();
+    counter.textContent = "0";
+    toast.className = "toast";
+    toast.textContent = "";
+    [name, email, rating, topic, message].forEach(el => el.classList.remove("ok","bad","hovered"));
+    [nameErr, emailErr, ratingErr, topicErr, messageErr].forEach(el => el.textContent = "");
+    bar.style.width = "0%";
+    meterText.textContent = "0% complete";
+  });
+
+  // Requirement: double-click submit confirmation
+  document.getElementById("submitBtn").addEventListener("dblclick", () => {
+    const ok = validateAll();
+
+    if (!ok) {
+      // Shake the card to signal an issue
+      form.classList.remove("shake");
+      void form.offsetWidth; // restart animation
+      form.classList.add("shake");
+
+      toast.className = "toast bad";
+      toast.textContent = "Fix the highlighted fields, then double‑click submit again.";
+      return;
+    }
+
+    const sure = confirm("Submit feedback now?");
+    if (!sure) return;
+
+    toast.className = "toast ok";
+    toast.textContent = "Thanks! Your feedback was submitted (demo).";
+
+    // In a real app: send using fetch('/api/feedback', {method:'POST', body:...})
+    // Then reset form
+    form.reset();
+    counter.textContent = "0";
+    [name, email, rating, topic, message].forEach(el => el.classList.remove("ok","bad","hovered"));
+    [nameErr, emailErr, ratingErr, topicErr, messageErr].forEach(el => el.textContent = "");
+    bar.style.width = "0%";
+    meterText.textContent = "0% complete";
+  });
+
+  // ---------- Theme toggle (click + keyboard Enter/Space) ----------
+  const themeBtn = document.getElementById("themeBtn");
+
+  function toggleTheme(){
+    const html = document.documentElement;
+    const next = html.getAttribute("data-theme") === "light" ? "" : "light";
+    if (next) html.setAttribute("data-theme","light");
+    else html.removeAttribute("data-theme");
+  }
+
+  themeBtn.addEventListener("click", toggleTheme);
+  themeBtn.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") toggleTheme();
+  });
+
+  // Initialize progress on load
+  updateProgress();
+</script>
+</body>
+</html>
